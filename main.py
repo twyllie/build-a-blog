@@ -76,22 +76,22 @@ class NewPostHandler(Handler):
         else:
             post = Post(title=title, body=body)
             post.put()
-            self.redirect('/blog')
+            self.redirect('/blog/{0}'.format(post.key().id()))
             return
 
 
 class SinglePostViewer(Handler):
     """ Shows the user the full post of a particular blog post in it's own page.
     """
-    def get(self, id):
+    def get(self, post_id):
+        post = Post.get_by_id(int(post_id))
         tmplt = jinja.get_template('single_post.html')
-        response = tmplt.render()
+        response = tmplt.render(post=post)
         self.response.write(response)
-
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/blog', MainBlogHandler),
     ('/newpost', NewPostHandler),
-    webapp2.Route('/blog/<id:\d+>', SinglePostViewer)
+    webapp2.Route('/blog/<post_id:\d+>', SinglePostViewer)
 ], debug=True)
