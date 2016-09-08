@@ -23,6 +23,11 @@ from google.appengine.ext import db
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
 jinja = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape = True)
 
+def get_posts(limit, offset):
+    post_list = db.GqlQuery("SELECT * FROM Post ORDER BY created DESC LIMIT {0} OFFSET {1}".format(limit,offset))
+    return post_list
+
+
 class Post(db.Model):
     title = db.StringProperty(required=True)
     body = db.TextProperty(required=True)
@@ -39,7 +44,7 @@ class MainHandler(Handler):
     """ Redirects the user to the /blog
     """
     def get(self):
-        self.redirect('/blog')
+        self.redirect('/blog?page=1')
         return
 
 
@@ -47,9 +52,15 @@ class MainBlogHandler(Handler):
     """ Displays the viewer with the top 5 blog posts, and shows links to the other services
     """
     def get(self):
-        blogposts = db.GqlQuery("SELECT * FROM Post ORDER BY created DESC LIMIT 5")
+        page = int(self.request.get("page"))
+        if page:
+            offset = (page - 1) * 5
+        else:
+            offset = 0
+        blogposts = get_posts(5, offset)
+        post_total = blogposts.count()/5
         tmplt = jinja.get_template('main_blog.html')
-        response = tmplt.render(blogposts = blogposts)
+        response = tmplt.render(blogposts = blogposts, page = page, post_total = post_total)
         self.response.write(response)
 
 
@@ -81,7 +92,7 @@ class NewPostHandler(Handler):
 
 
 class SinglePostViewer(Handler):
-    """ Shows the user the full post of a particular blog post in it's own page.
+    """ Shows the user an individual blog post in it's own page.
     """
     def get(self, post_id):
         post = Post.get_by_id(int(post_id))
@@ -89,9 +100,22 @@ class SinglePostViewer(Handler):
         response = tmplt.render(post=post)
         self.response.write(response)
 
+
+class DeletePostHandler(Handler):
+    """ Takes the user to confirmation of deletion page, and then deletes the post in question.
+    """
+    def get(self, post_id):
+        post = Post.get_by_id(int(post_id))
+        tmplt = jinja.get_template('delete_post.html')
+        response = tmplt.render(post=post)
+        post.delete()
+        self.response.write(response)
+
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/blog', MainBlogHandler),
-    ('/newpost', NewPostHandler),
-    webapp2.Route('/blog/<post_id:\d+>', SinglePostViewer)
+    ('/blog/newpost', NewPostHandler),
+    webapp2.Route('/blog/<post_id:\d+>', SinglePostViewer),
+    webapp2.Route('/blog/delete/<post_id:\d+>', DeletePostHandler)
 ], debug=True)
