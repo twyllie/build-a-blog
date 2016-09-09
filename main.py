@@ -40,7 +40,7 @@ class Handler(webapp2.RequestHandler):
     # clearly I didn't think anything was conveniant, lol.
 
 
-class MainHandler(Handler):
+class Index(Handler):
     """ Redirects the user to the /blog
     """
     def get(self):
@@ -79,7 +79,8 @@ class NewPostHandler(Handler):
         title = self.request.get("title")
         body = self.request.get("body")
         error = ""
-        if not title and not body:
+        # If the string is empty, or contains just whitespace for either the title or body, raise an error.
+        if not title or not title.strip() and not body or not body.strip():
             error = "Please fill out all of the fields"
             tmplt = jinja.get_template('new_post.html')
             response = tmplt.render(title=title,body=body,error=error)
@@ -113,7 +114,7 @@ class DeletePostHandler(Handler):
 
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler),
+    ('/', Index),
     ('/blog', MainBlogHandler),
     ('/blog/newpost', NewPostHandler),
     webapp2.Route('/blog/<post_id:\d+>', SinglePostViewer),
