@@ -9,6 +9,7 @@
     </div>
     {% endfor %}
 
+<div class="bottom_nav">
     {% if page > 1 %}
     <a href="/blog?page={{page - 1}}">previous</a>
     {% endif %}
@@ -16,5 +17,6 @@
     {% if page <= post_total %}
     <a href="/blog?page={{page + 1}}">next</a>
     {% endif %}
+</div>
 
 {% endblock %}

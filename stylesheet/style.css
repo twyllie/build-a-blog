@@ -1,0 +1,52 @@
+html{
+    background-color: #fdfdfd;
+}
+
+body{
+    max-width: 80%;
+    margin: 0 auto;
+    background-color: #fff;
+}
+
+.nav{
+
+}
+
+.error{
+    color: #f00;
+}
+
+.message{
+    width: 100%;
+    
+}
+
+.form{
+
+}
+
+.post{
+    max-width: 80%;
+    margin: 0 auto;
+    background-color: #fff;
+}
+
+.post h2{
+    width: 100%;
+    margin-bottom: 15px;
+    background-color: #eeeeee;
+}
+
+.post p{
+    width: 100%;
+    margin-bottom: 15px;
+    background-color: #fff;
+}
+
+.single_post{
+
+}
+
+.bottom_nav{
+
+}
