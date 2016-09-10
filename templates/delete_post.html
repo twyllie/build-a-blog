@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="message">{{post.title}} has been removed from the site.</h1>
+<div class="post">
+    <h2>{{post.title}} has been removed</h2>
+    <p>All content from {{post.title}} has been expunged from our storage.</p>
+</div>
 {% endblock %}
